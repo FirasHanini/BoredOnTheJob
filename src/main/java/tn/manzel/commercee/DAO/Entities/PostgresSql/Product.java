@@ -2,6 +2,7 @@ package tn.manzel.commercee.DAO.Entities.PostgresSql;
 
 import jakarta.persistence.*;
 import lombok.*;
+import tn.manzel.commercee.DAO.Entities.Mysql.Seller;
 
 @Entity
 @Getter @Setter
@@ -21,4 +22,8 @@ public class Product {
     private double price; // en dinars (ou euros)
 
     private int stock;
+
+    @ManyToOne
+    @JoinColumn(name = "seller_id")
+    private Seller seller;
 }

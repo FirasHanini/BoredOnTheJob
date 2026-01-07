@@ -3,6 +3,7 @@ package tn.manzel.commercee.Controller;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import tn.manzel.commercee.ApiEndpoints.ApiEndpoints;
 import tn.manzel.commercee.DAO.Entities.PostgresSql.Product;
 import tn.manzel.commercee.Service.ProductService.ProductService;
 
@@ -10,7 +11,7 @@ import java.util.List;
 
 @RequiredArgsConstructor
 @RestController
-@RequestMapping("/products")
+@RequestMapping(ApiEndpoints.PRODUCT_BASE)
 public class ProductController {
 
     private final ProductService service;

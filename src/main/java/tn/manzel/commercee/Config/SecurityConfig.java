@@ -19,6 +19,8 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.AnonymousAuthenticationFilter;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.context.SecurityContextHolderFilter;
+import tn.manzel.commercee.ApiEndpoints.ApiEndpoints;
+import tn.manzel.commercee.DAO.Entities.Mysql.Role;
 import tn.manzel.commercee.Security.JwtAuthenticationFilter;
 import tn.manzel.commercee.Service.UserService.CustomUserDetailsService;
 import tn.manzel.commercee.Service.UserService.JwtService;
@@ -41,6 +43,10 @@ public class SecurityConfig {
                 )
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/**").permitAll()
+                        .requestMatchers(ApiEndpoints.PRODUCT_BASE).hasAnyAuthority(
+                                Role.ADMIN.name(),
+                                Role.SELLER.name()
+                        )
                         .anyRequest().authenticated()
                 )
 
