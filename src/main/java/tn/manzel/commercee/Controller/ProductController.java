@@ -4,7 +4,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import tn.manzel.commercee.ApiEndpoints.ApiEndpoints;
-import tn.manzel.commercee.DAO.Entities.PostgresSql.Product;
+import tn.manzel.commercee.DAO.Entities.Mysql.Product;
+import tn.manzel.commercee.DAO.Entities.PostgresSql.AuditAction;
+import tn.manzel.commercee.Service.AuditService.Auditable;
 import tn.manzel.commercee.Service.ProductService.ProductService;
 
 import java.util.List;
@@ -16,6 +18,7 @@ public class ProductController {
 
     private final ProductService service;
 
+    @Auditable(action = AuditAction.CREATE, entity = "Product")
     @PostMapping
     public ResponseEntity<Product> create(@RequestBody Product product) {
         return ResponseEntity.ok().body(service.create(product));
@@ -33,6 +36,13 @@ public class ProductController {
             return ResponseEntity.noContent().build();
         }
         return ResponseEntity.ok().body(product);
+    }
+
+    @Auditable(action = AuditAction.DELETE, entity = "Product")
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> delete(@PathVariable Long id) {
+        service.delete(id);
+        return ResponseEntity.ok().body("Product deleted");
     }
 
 }

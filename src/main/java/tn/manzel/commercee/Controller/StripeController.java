@@ -6,7 +6,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import tn.manzel.commercee.DAO.Entities.PostgresSql.Product;
+import tn.manzel.commercee.DAO.Entities.Mysql.Product;
+import tn.manzel.commercee.DAO.Entities.PostgresSql.AuditAction;
+import tn.manzel.commercee.Service.AuditService.Auditable;
 import tn.manzel.commercee.Service.ProductService.ProductService;
 import tn.manzel.commercee.Service.StripeService.StripeService;
 
@@ -19,6 +21,7 @@ public class StripeController {
     private final StripeService stripeService;
     private final ProductService productService;
 
+    @Auditable(action = AuditAction.CREATE, entity = "N/A - Payment Intent")
     @PostMapping("/create/{productId}")
     public ResponseEntity<Map<String, String>> createPayment(@PathVariable Long productId) throws Exception {
 

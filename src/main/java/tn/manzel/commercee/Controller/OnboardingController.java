@@ -17,6 +17,7 @@ public class OnboardingController {
     private final StripeOnboardingService onboardingService;
     private final SellerService sellerService;
 
+
     @GetMapping("/{sellerId}")
     public ResponseEntity<String> onboard(@PathVariable Long sellerId) throws Exception {
 

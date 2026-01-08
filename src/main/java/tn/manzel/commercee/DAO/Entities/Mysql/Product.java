@@ -1,15 +1,17 @@
-package tn.manzel.commercee.DAO.Entities.PostgresSql;
+package tn.manzel.commercee.DAO.Entities.Mysql;
 
 import jakarta.persistence.*;
 import lombok.*;
-import tn.manzel.commercee.DAO.Entities.Mysql.Seller;
+import lombok.experimental.SuperBuilder;
+import org.hibernate.annotations.SQLRestriction;
 
 @Entity
 @Getter @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
-public class Product {
+@SuperBuilder
+@SQLRestriction("deleted = false")
+public class Product extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

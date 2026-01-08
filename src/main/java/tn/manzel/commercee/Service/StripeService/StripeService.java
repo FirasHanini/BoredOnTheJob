@@ -3,7 +3,7 @@ package tn.manzel.commercee.Service.StripeService;
 import com.stripe.model.PaymentIntent;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import tn.manzel.commercee.DAO.Entities.PostgresSql.Product;
+import tn.manzel.commercee.DAO.Entities.Mysql.Product;
 import com.stripe.param.PaymentIntentCreateParams;
 
 @Service
