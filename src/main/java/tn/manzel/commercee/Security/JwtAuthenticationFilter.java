@@ -14,6 +14,7 @@ import org.springframework.security.web.authentication.WebAuthenticationDetailsS
 import org.springframework.security.web.context.RequestAttributeSecurityContextRepository;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
+import tn.manzel.commercee.DAO.Repositories.PostgresSql.RevokedTokensRepository;
 import tn.manzel.commercee.Service.UserService.CustomUserDetailsService;
 import tn.manzel.commercee.Service.UserService.JwtService;
 
@@ -27,6 +28,7 @@ public class    JwtAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtService jwtService;
     private final CustomUserDetailsService userDetailsService;
+    private final RevokedTokensRepository revoked_tokens_repository;
     private final RequestAttributeSecurityContextRepository repo= new RequestAttributeSecurityContextRepository();
     @Override
     protected void doFilterInternal(HttpServletRequest request,
@@ -42,7 +44,14 @@ public class    JwtAuthenticationFilter extends OncePerRequestFilter {
         }
 
         String token = authHeader.substring(7);
+        String jti = jwtService.extractJti(token);
         String username = jwtService.extractUsername(token);
+
+        if (revoked_tokens_repository.existsByJti(jti)) {
+            // Optionnel : log + audit
+            filterChain.doFilter(request, response);
+            return;
+        }
 
         if (username != null &&
                 SecurityContextHolder.getContext().getAuthentication() == null) {

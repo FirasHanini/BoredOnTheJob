@@ -15,7 +15,7 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 
-public class Revoked_tokens {
+public class RevokedTokens {
 
     @Id
     String jti;

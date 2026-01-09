@@ -11,11 +11,10 @@
     import tn.manzel.commercee.DAO.Entities.Mysql.RegisterRequest;
     import tn.manzel.commercee.DAO.Entities.Mysql.Role;
     import tn.manzel.commercee.DAO.Entities.Mysql.User;
-    import tn.manzel.commercee.DAO.Entities.PostgresSql.Revoked_tokens;
+    import tn.manzel.commercee.DAO.Entities.PostgresSql.RevokedTokens;
     import tn.manzel.commercee.DAO.Repositories.Mysql.UserRepository;
-    import tn.manzel.commercee.DAO.Repositories.PostgresSql.Revoked_tokens_repository;
+    import tn.manzel.commercee.DAO.Repositories.PostgresSql.RevokedTokensRepository;
 
-    import java.time.LocalDateTime;
     import java.util.Date;
 
     @Service
@@ -24,7 +23,7 @@
         private final UserRepository userRepository;
         private final PasswordEncoder passwordEncoder;
         private final JwtService jwtService;
-        private final Revoked_tokens_repository revoked_tokens_repository;
+        private final RevokedTokensRepository revoked_tokens_repository;
 
 
 
@@ -56,7 +55,7 @@
             Date exp = jwtService.extractExpiration(token);
 
             revoked_tokens_repository.save(
-                    Revoked_tokens.builder()
+                    RevokedTokens.builder()
                             .ExpiredAt(exp)
                             .jti(jti)
                             .build()
