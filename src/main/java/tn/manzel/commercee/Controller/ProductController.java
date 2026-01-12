@@ -14,6 +14,7 @@ import java.util.List;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping(ApiEndpoints.PRODUCT_BASE)
+@CrossOrigin(origins = "http://localhost:4200")
 public class ProductController {
 
     private final ProductService service;

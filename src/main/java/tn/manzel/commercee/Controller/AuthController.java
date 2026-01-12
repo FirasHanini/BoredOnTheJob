@@ -16,7 +16,7 @@ import tn.manzel.commercee.Service.UserService.AuthService;
 @RestController
 @RequestMapping(ApiEndpoints.AUTH_BASE)
 @RequiredArgsConstructor
-@CrossOrigin()
+@CrossOrigin(origins = "http://localhost:4200")
 public class AuthController {
     private final AuthService authService;
     private final AuthenticationManager authenticationManager;
