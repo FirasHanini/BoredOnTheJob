@@ -8,11 +8,15 @@ public class ApiEndpoints {
     public static final String ORDER_BASE = "/order";
     public static final String STRIPE_BASE = "/stripe";
     public static final String USR_MANAGEMENT_BASE = "/user-management";
+    public static final String CART_BASE = "/cart";
 
-    public  class AuthEnpoints {
+    public static class AuthEnpoints {
         public static final String REGISTER = "/register";
         public static final String LOGIN = "/login";
         public static final String REGISTER_SELLER = "/register-seller";
         public static final String LOGOUT = "/logout";
+    }
+    public static class productEndpoints {
+        public static final String GET_BY_SELLER = "/seller";
     }
 }

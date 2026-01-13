@@ -10,6 +10,8 @@ import org.springframework.stereotype.Service;
 
 
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 @Service
@@ -22,7 +24,11 @@ public class JwtService {
     private long expiration;
 
     public String generateToken(UserDetails userDetails) {
+        Map<String, Object> extraClaims = new HashMap<>();
+        // Roles extraction
+        extraClaims.put("role", userDetails.getAuthorities().iterator().next().getAuthority());
         return Jwts.builder()
+                .setClaims(extraClaims)
                .setId(UUID.randomUUID().toString())
                 .setSubject(userDetails.getUsername())
                 .setIssuedAt(new Date())

@@ -2,6 +2,7 @@ package tn.manzel.commercee.Controller;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import tn.manzel.commercee.ApiEndpoints.ApiEndpoints;
 import tn.manzel.commercee.DAO.Entities.Mysql.Product;
@@ -21,13 +22,17 @@ public class ProductController {
 
     @Auditable(action = AuditAction.CREATE, entity = "Product")
     @PostMapping
-    public ResponseEntity<Product> create(@RequestBody Product product) {
-        return ResponseEntity.ok().body(service.create(product));
+    public ResponseEntity<Product> create(@RequestBody Product product, Authentication authentication) {
+        return ResponseEntity.ok().body(service.create(product, authentication.getName()));
     }
 
     @GetMapping
     public ResponseEntity<List<Product>> getAll() {
         return ResponseEntity.ok().body(service.findAll());
+    }
+    @GetMapping(ApiEndpoints.productEndpoints.GET_BY_SELLER)
+    public ResponseEntity<List<Product>> getProudctBySeller(@RequestParam String email){
+        return ResponseEntity.ok().body(service.findBySellerId(email));
     }
 
     @GetMapping("/{id}")
@@ -45,5 +50,7 @@ public class ProductController {
         service.delete(id);
         return ResponseEntity.ok().body("Product deleted");
     }
+
+
 
 }
