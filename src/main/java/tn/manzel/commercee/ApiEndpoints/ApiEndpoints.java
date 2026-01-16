@@ -13,7 +13,7 @@ public class ApiEndpoints {
     public static class AuthEnpoints {
         public static final String REGISTER = "/register";
         public static final String LOGIN = "/login";
-        public static final String REGISTER_SELLER = "/register-seller";
+        public static final String REGISTER_SELLER = "/seller-register";
         public static final String LOGOUT = "/logout";
     }
     public static class productEndpoints {

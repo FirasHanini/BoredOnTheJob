@@ -97,4 +97,14 @@ public class CartService {
     public CartItem findById(Long id){
         return cartRepository.findById(id).orElse(null);
     }
+
+    public boolean flushCart(String email) {
+        User user = userRepository.findByEmail(email).orElse(null);
+        if (user == null) {
+            return false;
+        }
+
+        cartRepository.deleteByUser(user);
+        return true;
+    }
 }

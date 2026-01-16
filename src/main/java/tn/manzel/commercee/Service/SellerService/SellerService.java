@@ -10,6 +10,7 @@ import tn.manzel.commercee.DAO.Entities.Mysql.Role;
 import tn.manzel.commercee.DAO.Entities.Mysql.Seller;
 
 import tn.manzel.commercee.DAO.Repositories.Mysql.SellerRepository;
+import tn.manzel.commercee.Service.StripeService.StripeOnboardingService;
 
 @Service
 @RequiredArgsConstructor
@@ -17,8 +18,9 @@ public class SellerService {
 
     private final SellerRepository repository;
     private final PasswordEncoder passwordEncoder;
+    private final StripeOnboardingService stripeOnBoardingService;
 
-    public Seller createSeller(RegisterRequest request) throws Exception {
+    public String createSeller(RegisterRequest request) throws Exception {
 
         Account account = Account.create(
                 AccountCreateParams.builder()
@@ -33,9 +35,10 @@ public class SellerService {
                 .role(Role.SELLER)
                 .build();
 
-        seller.setStripeAccountId(account.getId());
+        String acountId= account.getId();
+        seller.setStripeAccountId(acountId);
 
-        return repository.save(seller);
+        return stripeOnBoardingService.createOnboardingLink(acountId);
     }
 
     public Seller getSellerById(Long id) {

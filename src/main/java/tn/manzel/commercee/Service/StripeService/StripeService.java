@@ -104,11 +104,19 @@ public class StripeService {
 
 
     public void paySerllers(String email, String chargeId) throws Exception {
+        try {
+
 
         List<CartItem> cartItems = cartService.getCart(email);
         log.info("Cart items "+cartItems.toString());
         for (CartItem item : cartItems) {
             transferToSeller(item.getId(),chargeId);
+        }
+        Boolean val=cartService.flushCart(email);
+
+        log.info(val.toString()+"  cart cleared");
+        } catch (Exception e) {
+            log.error("ERREUR GÉNÉRALE DANS paySerllers: " + e.getMessage());
         }
 //        cartService.clearCartByUser(cartItems.get(0).getUser());
     }

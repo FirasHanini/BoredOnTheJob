@@ -1,6 +1,7 @@
 package tn.manzel.commercee.Controller;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.web.bind.annotation.*;
@@ -13,10 +14,13 @@ import tn.manzel.commercee.Service.AuditService.Auditable;
 import tn.manzel.commercee.Service.SellerService.SellerService;
 import tn.manzel.commercee.Service.UserService.AuthService;
 
+import java.util.Map;
+
 @RestController
 @RequestMapping(ApiEndpoints.AUTH_BASE)
 @RequiredArgsConstructor
 @CrossOrigin(origins = "http://localhost:4200")
+@Slf4j
 public class AuthController {
     private final AuthService authService;
     private final AuthenticationManager authenticationManager;
@@ -26,6 +30,7 @@ public class AuthController {
     @PostMapping(ApiEndpoints.AuthEnpoints.REGISTER)
     public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
         authService.register(request);
+
         return ResponseEntity.ok("User registered");
     }
 
@@ -43,9 +48,10 @@ public class AuthController {
 
     @Auditable(action = AuditAction.CREATE, entity = "USER")
     @PostMapping(ApiEndpoints.AuthEnpoints.REGISTER_SELLER)
-    public ResponseEntity<?> createSeller(@RequestBody RegisterRequest request) throws Exception {
-        sellerService.createSeller(request);
-        return ResponseEntity.ok().body("seller Registered");
+    public ResponseEntity<Map<String, String>> createSeller(@RequestBody RegisterRequest request) throws Exception {
+        String onboardingUrl= sellerService.createSeller(request);
+
+        return ResponseEntity.ok(Map.of("onboardingUrl", onboardingUrl));
     }
 
     @Auditable(action = AuditAction.LOGOUT, entity = "USER")
