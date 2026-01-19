@@ -46,7 +46,9 @@ public class SecurityConfig {
                         .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 )
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/**","/payment/webhook").permitAll()
+                        .requestMatchers("/auth/**","/payment/webhook",
+                                ApiEndpoints.SMTPAYEMENT_BASE+ApiEndpoints.SMTEndpoints.CALLBACK_PAYMENT
+                        ).permitAll()
                         .requestMatchers(HttpMethod.GET, ApiEndpoints.PRODUCT_BASE).permitAll()
                         .requestMatchers(ApiEndpoints.PRODUCT_BASE).hasAnyAuthority(
                                 Role.ADMIN.name(),

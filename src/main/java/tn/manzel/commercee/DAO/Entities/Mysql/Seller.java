@@ -15,4 +15,5 @@ import lombok.experimental.SuperBuilder;
 public class Seller extends User {
 
     private String stripeAccountId;
+    private String rib;
 }

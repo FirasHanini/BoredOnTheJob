@@ -29,7 +29,7 @@ import java.util.Map;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/payment")
+//@RequestMapping("/payment")
 public class StripeController {
     private final StripeService stripeService;
     private final ProductService productService;
@@ -41,7 +41,7 @@ public class StripeController {
 
 
 //    @Auditable(action = AuditAction.CREATE, entity = "N/A - Payment Intent Cart Pay")
-    @PostMapping()
+//    @PostMapping()
     public ResponseEntity<Map<String, String>> PayCart(Authentication auth) throws Exception {
         String email = auth.getName();
         var intent= stripeService.createPaymentIntent(email);
@@ -53,7 +53,7 @@ public class StripeController {
 
 
     @Auditable(action = AuditAction.CREATE, entity = "N/A - Payment Intent")
-    @PostMapping("/create/{productId}")
+//    @PostMapping("/create/{productId}")
     public ResponseEntity<Map<String, String>> createPaymentFromProduct(@PathVariable Long productId) throws Exception {
 
         Product product = productService.findById(productId);
@@ -71,7 +71,7 @@ public class StripeController {
 
 
 
-    @PostMapping("/webhook")
+//    @PostMapping("/webhook")
     public ResponseEntity<String> handleStripeWebhook(@RequestBody String payload, @RequestHeader("Stripe-Signature") String sigHeader) {
         Event event;
         try {

@@ -14,7 +14,7 @@ import tn.manzel.commercee.Service.UserService.UserManagementService;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping(ApiEndpoints.USR_MANAGEMENT_BASE)
-public class ServiceManagementController {
+public class ServiceUserManagementController {
 
     private final UserManagementService service;
 

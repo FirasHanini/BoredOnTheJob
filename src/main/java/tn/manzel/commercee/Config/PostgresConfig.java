@@ -41,6 +41,9 @@ public class PostgresConfig {
                 .build();
     }
 
+
+
+
     @Bean(name = "postgresTransactionManager")
     public PlatformTransactionManager transactionManager(
             @Qualifier("postgresEntityManagerFactory") EntityManagerFactory entityManagerFactory) {
