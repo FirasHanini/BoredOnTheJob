@@ -51,6 +51,13 @@ public class ProductService {
         repository.save(product);
     }
 
+    public Product updateStock(Product product, int quantity) {
+        product.setStock(
+                product.getStock() - quantity
+        );
+        return repository.save(product);
+    }
+
 
 
 }

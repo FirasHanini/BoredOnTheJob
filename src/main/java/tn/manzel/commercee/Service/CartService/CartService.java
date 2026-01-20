@@ -7,8 +7,8 @@ import tn.manzel.commercee.DAO.Entities.Mysql.CartItem;
 import tn.manzel.commercee.DAO.Entities.Mysql.Product;
 import tn.manzel.commercee.DAO.Entities.Mysql.User;
 import tn.manzel.commercee.DAO.Repositories.Mysql.CartItemRepository;
-import tn.manzel.commercee.DAO.Repositories.Mysql.ProductRepository;
-import tn.manzel.commercee.DAO.Repositories.Mysql.UserRepository;
+import tn.manzel.commercee.Service.ProductService.ProductService;
+import tn.manzel.commercee.Service.UserService.UserManagementService;
 
 import java.util.List;
 import java.util.Optional;
@@ -20,17 +20,19 @@ import java.util.Set;
 public class CartService {
 
     private final CartItemRepository cartRepository;
-    private final UserRepository userRepository;
-    private final ProductRepository productRepository;
+
+
+    private final UserManagementService userManagementService;
+    private final ProductService productService;
 
     public List<CartItem> getCart(String email) {
-        return cartRepository.findByUserEmail(email);
+        return cartRepository.findByBuyerEmail(email);
     }
 
  //   @Transactional
     public CartItem addToCart(Long productId, int quantity, String email) {
-        User user = userRepository.findByEmail(email).orElse(null);
-        Product product = productRepository.findById(productId).orElse(null);
+        User user = userManagementService.findByEmail(email);
+        Product product = productService.findById(productId);
 
         if (product == null || user==null) {
             return null;
@@ -38,13 +40,14 @@ public class CartService {
 
 
         // Vérifier si le produit est déjà dans le panier
-        Optional<CartItem> existingItem = cartRepository.findByUserEmailAndProductId(email, productId);
+        Optional<CartItem> existingItem = cartRepository.findByBuyerEmailAndProductId(email, productId);
 
         if (existingItem.isEmpty()) {
-            CartItem newItem = new CartItem();
-            newItem.setUser(user);
-            newItem.setProduct(product);
-            newItem.setQuantity(quantity);
+            CartItem newItem = CartItem.builder()
+                    .buyer(user)
+                    .product(product)
+                    .quantity(quantity)
+                    .build();
             return cartRepository.save(newItem);
 
         }
@@ -71,7 +74,7 @@ public class CartService {
 
     public void removeFromCart(String email, Set<Long> productsIds) {
         for (Long productId : productsIds) {
-            Optional<CartItem> existingItem = cartRepository.findByUserEmailAndProductId(email, productId);
+            Optional<CartItem> existingItem = cartRepository.findByBuyerEmailAndProductId(email, productId);
             if (existingItem.isPresent()) {
                 CartItem item = existingItem.get();
                 cartRepository.delete(item);
@@ -83,7 +86,7 @@ public class CartService {
     }
 
     public long calculateTotalPrice(String email) {
-        List<CartItem> cartItems = cartRepository.findByUserEmail(email);
+        List<CartItem> cartItems = cartRepository.findByBuyerEmail(email);
         long totalPrice = 0;
 
         for (CartItem item : cartItems) {
@@ -99,12 +102,22 @@ public class CartService {
     }
 
     public boolean flushCart(String email) {
-        User user = userRepository.findByEmail(email).orElse(null);
+        User user = userManagementService.findByEmail(email);
         if (user == null) {
             return false;
         }
 
-        cartRepository.deleteByUser(user);
+        cartRepository.deleteByBuyer(user);
         return true;
     }
+
+
+    public void updatePostPay(String email) {
+        List<CartItem>items= getCart(email);
+        for (CartItem item : items) {
+            productService.updateStock(item.getProduct(), item.getQuantity());
+        }
+    }
+
+
 }
