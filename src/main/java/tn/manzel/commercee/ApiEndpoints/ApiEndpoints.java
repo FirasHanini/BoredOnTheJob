@@ -1,6 +1,9 @@
 package tn.manzel.commercee.ApiEndpoints;
 
 public class ApiEndpoints {
+
+
+    public static final String NGROK = "https://61bcdd06c84a.ngrok-free.app";
     public static final String AUTH_BASE = "/auth";
     public static final String SELLER_BASE = "/seller";
     public static final String BUYER_BASE = "/buyer";
@@ -22,5 +25,6 @@ public class ApiEndpoints {
     }
     public static class konnektEndpoints {
         public static final String INIT_PAYMENT = "/init-payment";
+        public static final String WEBHOOK_PAYMENT = "/webhook";
     }
 }
