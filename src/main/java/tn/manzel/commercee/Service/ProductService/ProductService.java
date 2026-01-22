@@ -52,5 +52,14 @@ public class ProductService {
     }
 
 
+    public Product updateStock(Long productId, int stockSold) {
+        Product product = findById(productId);
+        if (product != null) {
+            int newStock= product.getStock() - stockSold;
+            product.setStock(newStock);
+            return repository.save(product);
+        }
+        return null;
+    }
 
 }

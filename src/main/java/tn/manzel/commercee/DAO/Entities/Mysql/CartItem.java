@@ -19,4 +19,11 @@ public class CartItem {
     private User user;
 
     private int quantity;
+
+    @Override
+    public String toString() {
+        return "CartItem{" + quantity+
+                " x product=" + product +
+                '}';
+    }
 }

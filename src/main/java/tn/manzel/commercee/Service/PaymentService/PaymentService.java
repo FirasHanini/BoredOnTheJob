@@ -6,9 +6,17 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import tn.manzel.commercee.DAO.Entities.Mysql.CartItem;
+import tn.manzel.commercee.DAO.Entities.Mysql.Payout;
+import tn.manzel.commercee.DAO.Entities.Mysql.PayoutStatus;
+import tn.manzel.commercee.DTO.PayoutSummaryDTO;
 import tn.manzel.commercee.Service.CartService.CartService;
-import tn.manzel.commercee.Service.KonnektPaymentService.KonnektPaymentService;
 
+import tn.manzel.commercee.Service.PaymeeService.PaymeeService;
+import tn.manzel.commercee.Service.PayoutService.PayoutService;
+import tn.manzel.commercee.Service.ProductService.ProductService;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
@@ -18,7 +26,9 @@ import java.util.Map;
 public class PaymentService {
 
     private final CartService cartService;
-    private final PaymentService paymentService;
+    private final PaymeeService paymentService;
+    private final PayoutService payoutService;
+    private final ProductService productService;
 
 
     public long getTotalAmount(String email) {
@@ -32,18 +42,72 @@ public class PaymentService {
         List<CartItem> items= cartService.getCart(email);
         String description= "Payment from "+email+" for "+items.toString();
 
-        // add Payouts, pending, success, after webhook payement success, so the weekly selleres paiement is done
-        return paymentService.initierPaiement((double)totalAmount, description) ;
+        // add Payouts, pending, success, after webhook payement success, so the weekly sellers paiement is done
+        return paymentService.createPayment((double)totalAmount,description,email);
+
     }
 
 
 
-
-    public long getTotalAmountPerSeller(String email)
+    public BigDecimal amountAfterCommission(BigDecimal amount)
     {
-        return 0;
+        double commissionRate = 0.05; // 5% commission
+
+       return amount.multiply(
+                BigDecimal.valueOf(1).subtract(BigDecimal.valueOf(commissionRate)
+                )
+        );
+
     }
 
+
+    public void postWebhookActions(String email)
+    {
+        List<CartItem>items= cartService.getCart(email);
+        for(CartItem item: items) {
+            double amount = item.getProduct().getPrice() * item.getQuantity();
+            Payout payout = Payout.builder()
+                    .generatedAt(LocalDateTime.now())
+                    .amount(amountAfterCommission(BigDecimal.valueOf(amount)))
+                    .status(PayoutStatus.PENDING)
+                    .itemsSold(item.toString())
+                    .seller(item.getProduct().getSeller())
+                    .paidAt(null)
+                    .build();
+
+         payoutService.savePayout(payout);
+         productService.updateStock(item.getProduct().getId(), item.getQuantity());
+
+        }
+        cartService.flushCart(email);
+
+        // create Payout for sellers
+        // update product stock
+        // flush cart
+
+    }
+
+
+
+    //Paying Sellers
+
+    public String getCsvToPaySellers()
+    {
+        List<PayoutSummaryDTO> payouts= payoutService.getPendingGroupedByseller();
+
+    // 2. Créer l'en-tête du fichier
+        StringBuilder csv = new StringBuilder();
+        csv.append("Email;Somme;IBAN\n"); // Utilise ";" pour une meilleure compatibilité Excel en Tunisie
+
+
+        for (PayoutSummaryDTO dto : payouts) {
+            csv.append(dto.sellerEmail()).append(";")
+                    .append(dto.totalAmount()).append(";")
+                    .append(dto.sellerRib()).append("\n");
+        }
+
+        return csv.toString();
+    }
 
 
 }

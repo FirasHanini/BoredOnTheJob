@@ -28,7 +28,7 @@ public class PaymeeService {
     private String paymeeURL;
 
 
-    public Map<String, Object> createPayment(Double montant, String orderReference) {
+    public Map<String, Object> createPayment(Double amount, String description, String email) {
         RestTemplate restTemplate = new RestTemplate();
 
         HttpHeaders headers = new HttpHeaders();
@@ -37,14 +37,14 @@ public class PaymeeService {
 
         Map<String, Object> body = new HashMap<>();
         body.put("vendor", vendorId);
-        body.put("amount", montant);
-        body.put("note", "Paiement commande " + orderReference);
+        body.put("amount", amount);
+        body.put("note", "Paiement Description " + description);
         body.put("first_name", "Acheteur");
         body.put("last_name", "Test");
-        body.put("email", "client@test.tn");
+        body.put("email", email);
         body.put("phone", "21600000000");
-        body.put("return_url", "http://localhost:4200/payment-success");
-        body.put("cancel_url", "http://localhost:4200/payment-fail");
+        body.put("return_url", "https://localhost:4200/products");
+        body.put("cancel_url", "https://localhost:4200/payment-fail");
         body.put("webhook_url", ApiEndpoints.NGROK
                                 +ApiEndpoints.PAYMEE_BASE
                                 +ApiEndpoints.paymeetEndpoints.WEBHOOK);
@@ -53,6 +53,9 @@ public class PaymeeService {
 
         // La réponse contient "data" -> "payment_url" et "token"
         ResponseEntity<Map> response = restTemplate.postForEntity(paymeeURL, request, Map.class);
-        return (Map<String, Object>) response.getBody().get("data");
+        return (Map<String, Object>)  response.getBody();
+
+
+        //
     }
 }

@@ -15,6 +15,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 
+import tn.manzel.commercee.ApiEndpoints.ApiEndpoints;
 import tn.manzel.commercee.DAO.Entities.Mysql.Product;
 import tn.manzel.commercee.DAO.Entities.PostgresSql.AuditAction;
 import tn.manzel.commercee.Service.AuditService.Auditable;
@@ -29,7 +30,7 @@ import java.util.Map;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/payment")
+@RequestMapping(ApiEndpoints.STRIPE_BASE)
 public class StripeController {
     private final StripeService stripeService;
     private final ProductService productService;

@@ -7,8 +7,8 @@ import tn.manzel.commercee.DAO.Entities.Mysql.CartItem;
 import tn.manzel.commercee.DAO.Entities.Mysql.Product;
 import tn.manzel.commercee.DAO.Entities.Mysql.User;
 import tn.manzel.commercee.DAO.Repositories.Mysql.CartItemRepository;
-import tn.manzel.commercee.DAO.Repositories.Mysql.ProductRepository;
-import tn.manzel.commercee.DAO.Repositories.Mysql.UserRepository;
+import tn.manzel.commercee.Service.ProductService.ProductService;
+import tn.manzel.commercee.Service.UserService.UserManagementService;
 
 import java.util.List;
 import java.util.Optional;
@@ -20,8 +20,8 @@ import java.util.Set;
 public class CartService {
 
     private final CartItemRepository cartRepository;
-    private final UserRepository userRepository;
-    private final ProductRepository productRepository;
+    private final UserManagementService userService;
+    private final ProductService productService;
 
     public List<CartItem> getCart(String email) {
         return cartRepository.findByUserEmail(email);
@@ -29,8 +29,8 @@ public class CartService {
 
  //   @Transactional
     public CartItem addToCart(Long productId, int quantity, String email) {
-        User user = userRepository.findByEmail(email).orElse(null);
-        Product product = productRepository.findById(productId).orElse(null);
+        User user = userService.findByEmail(email);
+        Product product = productService.findById(productId);
 
         if (product == null || user==null) {
             return null;
@@ -99,7 +99,8 @@ public class CartService {
     }
 
     public boolean flushCart(String email) {
-        User user = userRepository.findByEmail(email).orElse(null);
+        User user = userService.findByEmail(email);
+
         if (user == null) {
             return false;
         }
