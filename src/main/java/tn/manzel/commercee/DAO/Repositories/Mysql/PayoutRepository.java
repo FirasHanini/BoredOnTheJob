@@ -19,4 +19,6 @@ public interface PayoutRepository extends JpaRepository<Payout,Long> {
             "WHERE p.status = :status " +
             "GROUP BY s.id, s.email, s.iban")
     List<PayoutSummaryDTO> getPayoutsByStatusGroupedBySellers(@Param("status") PayoutStatus status);
+
+    List<Payout> findAllByStatus(PayoutStatus status);
 }

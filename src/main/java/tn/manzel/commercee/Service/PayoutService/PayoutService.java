@@ -24,4 +24,8 @@ public class PayoutService {
         return repository.getPayoutsByStatusGroupedBySellers(PayoutStatus.PENDING);
     }
 
+    public List<Payout> getAllByStatus(PayoutStatus status) {
+        return repository.findAllByStatus(status);
+    }
+
 }

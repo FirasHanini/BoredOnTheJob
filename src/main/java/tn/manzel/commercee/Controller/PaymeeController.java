@@ -43,6 +43,7 @@ public class PaymeeController {
 
     @PostMapping(ApiEndpoints.paymeetEndpoints.WEBHOOK)
     public ResponseEntity<String> handlePaymeeWebhook(PaymeeWebhookDTO payload) {
+
         // 1. Extraire le token de paiement envoyé par Paymee;
         if ( payload.getToken() == null) {
             return ResponseEntity.badRequest().body("Token missing");
@@ -70,30 +71,48 @@ public class PaymeeController {
 
 
 
-    @GetMapping(ApiEndpoints.paymeetEndpoints.EXPORT_PAYMENT)
-    public ResponseEntity<Resource> exportCsv() throws IOException {
-        // Générer le contenu
-        String csvContent = paymentCalculService.getCsvToPaySellers();
-
-        String folderPath = "C:/Users/hanin/OneDrive/Bureau/Front";
-        Path path = Paths.get(folderPath).resolve("payouts.csv");
-
-        // 2. Écrire le fichier physiquement sur le disque
-        Files.write(path, csvContent.getBytes(StandardCharsets.UTF_8));
-        byte[] data = Files.readAllBytes(path);
-        ByteArrayResource resource = new ByteArrayResource(data);
-
-        return ResponseEntity.ok()
-                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=payouts.csv")
-                .contentType(MediaType.parseMediaType("text/csv"))
-
-                .body(resource);
-    }
+//    @GetMapping(ApiEndpoints.paymeetEndpoints.EXPORT_PAYMENT)
+//    public ResponseEntity<Resource> exportCsv(@RequestParam String csvPath) throws IOException {
+//        // Générer le contenu
+//        String csvContent = paymentCalculService.getCsvToPaySellers();
+//
+//        String folderPath =csvPath;
+//                // "C:/Users/hanin/OneDrive/Bureau/Front";
+//        Path path = Paths.get(folderPath).resolve("payouts.csv");
+//
+//        // 2. Écrire le fichier physiquement sur le disque
+//        Files.write(path, csvContent.getBytes(StandardCharsets.UTF_8));
+//        byte[] data = Files.readAllBytes(path);
+//        ByteArrayResource resource = new ByteArrayResource(data);
+//
+//        return ResponseEntity.ok()
+//                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=payouts.csv")
+//                .contentType(MediaType.parseMediaType("text/csv"))
+//
+//                .body(resource);
+//    }
 
 
 
     @PostMapping()
     public ResponseEntity<Map<String, Object>> createPayment(Authentication auth){
         return ResponseEntity.ok().body(paymentCalculService.payCart(auth.getName()));
+    }
+
+
+    @GetMapping(ApiEndpoints.paymeetEndpoints.EXPORT_PAYMENT)
+    public ResponseEntity<Resource> exportCsv() throws IOException {
+        // 1. Générer le contenu CSV en mémoire
+        String csvContent = paymentCalculService.getCsvToPaySellers();
+        byte[] data = csvContent.getBytes(StandardCharsets.UTF_8);
+
+        ByteArrayResource resource = new ByteArrayResource(data);
+
+        // 2. Retourner le flux directement au navigateur
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=payouts.csv")
+                .contentType(MediaType.parseMediaType("text/csv"))
+                .contentLength(data.length)
+                .body(resource);
     }
 }

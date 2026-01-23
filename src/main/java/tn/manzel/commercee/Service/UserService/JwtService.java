@@ -47,6 +47,7 @@ public class JwtService {
     }
 
         public String extractJti(String token) {
+
             return Jwts.parserBuilder()
                     .setSigningKey(secret.getBytes())
                     .build()

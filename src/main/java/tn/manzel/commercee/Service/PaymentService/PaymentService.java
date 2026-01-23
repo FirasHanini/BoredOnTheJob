@@ -76,6 +76,7 @@ public class PaymentService {
                     .build();
 
          payoutService.savePayout(payout);
+
          productService.updateStock(item.getProduct().getId(), item.getQuantity());
 
         }

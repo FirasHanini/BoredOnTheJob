@@ -1,5 +1,6 @@
 package tn.manzel.commercee.Security;
 
+import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -34,49 +35,59 @@ public class    JwtAuthenticationFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
+        try {
 
-        final String authHeader = request.getHeader("Authorization");
+            final String authHeader = request.getHeader("Authorization");
 
-        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+                filterChain.doFilter(request, response);
+
+                return;
+            }
+
+            String token = authHeader.substring(7);
+            String jti = jwtService.extractJti(token);
+            String username = jwtService.extractUsername(token);
+
+            if (revoked_tokens_repository.existsByJti(jti)) {
+                // Optionnel : log + audit
+                filterChain.doFilter(request, response);
+                return;
+            }
+
+            if (username != null &&
+                    SecurityContextHolder.getContext().getAuthentication() == null) {
+
+                UserDetails userDetails =
+                        userDetailsService.loadUserByUsername(username);
+
+                UsernamePasswordAuthenticationToken authToken =
+                        new UsernamePasswordAuthenticationToken(
+                                userDetails,
+                                null,
+                                userDetails.getAuthorities()
+                        );
+                authToken.setDetails(
+                        new WebAuthenticationDetailsSource()
+                                .buildDetails(request)
+                );
+                SecurityContext context = SecurityContextHolder.createEmptyContext();
+                context.setAuthentication(authToken);
+                SecurityContextHolder.setContext(context);
+                log.info("Authenticated user: " + username + " with token: " + token + " authToken: " + authToken);
+                SecurityContextHolder.getContext().setAuthentication(authToken);
+                repo.saveContext(context, request, response);
+            }
+
             filterChain.doFilter(request, response);
-
-            return;
+        }catch (ExpiredJwtException e) {
+            // On intercepte spécifiquement l'expiration du JWT
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); // Force le code 401
+            response.setContentType("application/json");
+            response.getWriter().write("{\"error\": \"Token expired\", \"message\": \"" + e.getMessage() + "\"}");
+        } catch (Exception e) {
+            // Pour les autres erreurs de sécurité
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         }
-
-        String token = authHeader.substring(7);
-        String jti = jwtService.extractJti(token);
-        String username = jwtService.extractUsername(token);
-
-        if (revoked_tokens_repository.existsByJti(jti)) {
-            // Optionnel : log + audit
-            filterChain.doFilter(request, response);
-            return;
-        }
-
-        if (username != null &&
-                SecurityContextHolder.getContext().getAuthentication() == null) {
-
-            UserDetails userDetails =
-                    userDetailsService.loadUserByUsername(username);
-
-            UsernamePasswordAuthenticationToken authToken =
-                    new UsernamePasswordAuthenticationToken(
-                            userDetails,
-                            null,
-                            userDetails.getAuthorities()
-                    );
-            authToken.setDetails(
-                    new WebAuthenticationDetailsSource()
-                            .buildDetails(request)
-            );
-            SecurityContext context= SecurityContextHolder.createEmptyContext();
-            context.setAuthentication(authToken);
-            SecurityContextHolder.setContext(context);
-            log.info("Authenticated user: " + username + " with token: " + token+" authToken: "+authToken);
-            SecurityContextHolder.getContext().setAuthentication(authToken);
-            repo.saveContext(context, request, response);
-        }
-
-        filterChain.doFilter(request, response);
     }
 }

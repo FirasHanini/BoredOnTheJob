@@ -24,6 +24,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 import tn.manzel.commercee.ApiEndpoints.ApiEndpoints;
 import tn.manzel.commercee.DAO.Entities.Mysql.Role;
+
 import tn.manzel.commercee.Security.JwtAuthenticationFilter;
 
 
@@ -48,11 +49,13 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/auth/**",ApiEndpoints.PAYMEE_BASE
                                 +ApiEndpoints.paymeetEndpoints.WEBHOOK).permitAll()
-                        .requestMatchers(HttpMethod.GET, ApiEndpoints.PRODUCT_BASE).permitAll()
+                        .requestMatchers(HttpMethod.GET, ApiEndpoints.PRODUCT_BASE
+                        ).permitAll()
                         .requestMatchers(ApiEndpoints.PRODUCT_BASE).hasAnyAuthority(
                                 Role.ADMIN.name(),
                                 Role.SELLER.name()
                         )
+                        .requestMatchers(ApiEndpoints.PAYOUT_BASE).hasAnyAuthority(Role.ADMIN.name())
                         .anyRequest().authenticated()
                 )
 
