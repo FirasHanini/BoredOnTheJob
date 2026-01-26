@@ -8,6 +8,7 @@ import tn.manzel.commercee.ApiEndpoints.ApiEndpoints;
 import tn.manzel.commercee.DAO.Entities.Mysql.Product;
 import tn.manzel.commercee.DAO.Entities.PostgresSql.AuditAction;
 import tn.manzel.commercee.Service.AuditService.Auditable;
+import tn.manzel.commercee.Service.AuditService.Entities;
 import tn.manzel.commercee.Service.ProductService.ProductService;
 
 import java.util.List;
@@ -20,7 +21,7 @@ public class ProductController {
 
     private final ProductService service;
 
-    @Auditable(action = AuditAction.CREATE, entity = "Product")
+    @Auditable(action = AuditAction.CREATE, entity = Entities.PRODUCT)
     @PostMapping
     public ResponseEntity<Product> create(@RequestBody Product product, Authentication authentication) {
         return ResponseEntity.ok().body(service.create(product, authentication.getName()));
@@ -44,7 +45,7 @@ public class ProductController {
         return ResponseEntity.ok().body(product);
     }
 
-    @Auditable(action = AuditAction.DELETE, entity = "Product")
+    @Auditable(action = AuditAction.DELETE, entity = Entities.PRODUCT)
     @DeleteMapping("/{id}")
     public ResponseEntity<String> delete(@PathVariable Long id) {
         service.delete(id);

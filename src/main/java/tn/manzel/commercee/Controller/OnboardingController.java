@@ -6,6 +6,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import tn.manzel.commercee.DAO.Entities.PostgresSql.AuditAction;
+import tn.manzel.commercee.Service.AuditService.Auditable;
+import tn.manzel.commercee.Service.AuditService.Entities;
 import tn.manzel.commercee.Service.SellerService.SellerService;
 import tn.manzel.commercee.Service.StripeService.StripeOnboardingService;
 
@@ -18,6 +21,7 @@ public class OnboardingController {
     private final SellerService sellerService;
 
 
+//    @Auditable(action = AuditAction.CREATE, entity = Entities.ONBOARDING)
     @GetMapping("/{sellerId}")
     public ResponseEntity<String> onboard(@PathVariable Long sellerId) throws Exception {
 

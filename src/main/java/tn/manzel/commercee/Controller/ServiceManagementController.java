@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 import tn.manzel.commercee.ApiEndpoints.ApiEndpoints;
 import tn.manzel.commercee.DAO.Entities.PostgresSql.AuditAction;
 import tn.manzel.commercee.Service.AuditService.Auditable;
+import tn.manzel.commercee.Service.AuditService.Entities;
 import tn.manzel.commercee.Service.UserService.UserManagementService;
 
 @RequiredArgsConstructor
@@ -18,7 +19,7 @@ public class ServiceManagementController {
 
     private final UserManagementService service;
 
-    @Auditable(action = AuditAction.DELETE, entity = "USER")
+    @Auditable(action = AuditAction.DELETE, entity = Entities.USER)
     @DeleteMapping("/{email}")
     public ResponseEntity<String> delete(@PathVariable String email) {
         service.delete(email);

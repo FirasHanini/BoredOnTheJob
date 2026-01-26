@@ -20,6 +20,7 @@ import tn.manzel.commercee.DAO.Entities.Mysql.Product;
 import tn.manzel.commercee.DAO.Entities.PostgresSql.AuditAction;
 import tn.manzel.commercee.Service.AuditService.Auditable;
 
+import tn.manzel.commercee.Service.AuditService.Entities;
 import tn.manzel.commercee.Service.ProductService.ProductService;
 import tn.manzel.commercee.Service.StripeService.StripeService;
 
@@ -53,7 +54,7 @@ public class StripeController {
 
 
 
-    @Auditable(action = AuditAction.CREATE, entity = "N/A - Payment Intent")
+    @Auditable(action = AuditAction.CREATE, entity = Entities.PAYMENT)
     @PostMapping("/create/{productId}")
     public ResponseEntity<Map<String, String>> createPaymentFromProduct(@PathVariable Long productId) throws Exception {
 

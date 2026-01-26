@@ -11,6 +11,7 @@ import tn.manzel.commercee.DAO.Entities.Mysql.LoginRequest;
 import tn.manzel.commercee.DAO.Entities.Mysql.RegisterRequest;
 import tn.manzel.commercee.DAO.Entities.PostgresSql.AuditAction;
 import tn.manzel.commercee.Service.AuditService.Auditable;
+import tn.manzel.commercee.Service.AuditService.Entities;
 import tn.manzel.commercee.Service.SellerService.SellerService;
 import tn.manzel.commercee.Service.UserService.AuthService;
 
@@ -26,7 +27,7 @@ public class AuthController {
     private final AuthenticationManager authenticationManager;
     private final SellerService sellerService;
 
-    @Auditable(action = AuditAction.CREATE, entity = "USER")
+    @Auditable(action = AuditAction.CREATE, entity = Entities.USER)
     @PostMapping(ApiEndpoints.AuthEnpoints.REGISTER)
     public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
         authService.register(request);
@@ -34,7 +35,7 @@ public class AuthController {
         return ResponseEntity.ok("User registered");
     }
 
-    @Auditable(action = AuditAction.LOGIN, entity = "USER")
+    @Auditable(action = AuditAction.LOGIN, entity = Entities.SESSION)
     @PostMapping(ApiEndpoints.AuthEnpoints.LOGIN)
     public ResponseEntity<AuthResponse> login(@RequestBody LoginRequest request) {
         String token = authService.login(request, authenticationManager);
@@ -46,7 +47,7 @@ public class AuthController {
 
 
 
-    @Auditable(action = AuditAction.CREATE, entity = "USER")
+    @Auditable(action = AuditAction.CREATE, entity = Entities.SELLER)
     @PostMapping(ApiEndpoints.AuthEnpoints.REGISTER_SELLER)
     public ResponseEntity<Map<String, String>> createSeller(@RequestBody RegisterRequest request) throws Exception {
         String onboardingUrl= sellerService.createSeller(request);
@@ -54,7 +55,7 @@ public class AuthController {
         return ResponseEntity.ok(Map.of("onboardingUrl", onboardingUrl));
     }
 
-    @Auditable(action = AuditAction.LOGOUT, entity = "USER")
+    @Auditable(action = AuditAction.LOGOUT, entity = Entities.SESSION)
     @PostMapping(ApiEndpoints.AuthEnpoints.LOGOUT)
     public ResponseEntity<Void> logout(@RequestHeader("Authorization") String auth){
         if (!authService.logout(auth))

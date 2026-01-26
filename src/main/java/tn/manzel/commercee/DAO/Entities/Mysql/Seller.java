@@ -14,7 +14,8 @@ import lombok.experimental.SuperBuilder;
 @SuperBuilder
 public class Seller extends User {
 
+    // To be removed
     private String stripeAccountId;
     @NonNull
-    private String iban;
+    private String rib;
 }

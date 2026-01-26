@@ -81,13 +81,15 @@ public class    JwtAuthenticationFilter extends OncePerRequestFilter {
 
             filterChain.doFilter(request, response);
         }catch (ExpiredJwtException e) {
-            // On intercepte spécifiquement l'expiration du JWT
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED); // Force le code 401
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.setHeader("Access-Control-Allow-Origin", "http://localhost:4200"); // Ton URL Front
+            response.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
             response.setContentType("application/json");
-            response.getWriter().write("{\"error\": \"Token expired\", \"message\": \"" + e.getMessage() + "\"}");
+            response.getWriter().write("{\"status\": 401, \"message\": \"Token expired\"}");
         } catch (Exception e) {
             // Pour les autres erreurs de sécurité
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+           response.setHeader("Error message",e.getMessage());
+           response.setHeader("Error cause message",e.getCause().getMessage());
         }
     }
 }

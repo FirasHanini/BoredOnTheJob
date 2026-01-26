@@ -30,7 +30,7 @@ public class AuditAspect {
             auditService.log(
                     username,
                     auditable.action(),
-                    auditable.entity(),
+                    auditable.entity().toString(),
                     extractEntityId(joinPoint.getArgs()),
                     true,
                     "SUCCESS"
@@ -43,7 +43,7 @@ public class AuditAspect {
             auditService.log(
                     username,
                     auditable.action(),
-                    auditable.entity(),
+                    auditable.entity().toString(),
                     extractEntityId(joinPoint.getArgs()),
                     false,
                     ex.getMessage()

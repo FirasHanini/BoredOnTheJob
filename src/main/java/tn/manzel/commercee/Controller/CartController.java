@@ -6,6 +6,9 @@ import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import tn.manzel.commercee.ApiEndpoints.ApiEndpoints;
 import tn.manzel.commercee.DAO.Entities.Mysql.CartItem;
+import tn.manzel.commercee.DAO.Entities.PostgresSql.AuditAction;
+import tn.manzel.commercee.Service.AuditService.Auditable;
+import tn.manzel.commercee.Service.AuditService.Entities;
 import tn.manzel.commercee.Service.CartService.CartService;
 
 import java.util.List;
@@ -19,11 +22,13 @@ public class CartController {
 
     private final CartService service;
 
+
     @GetMapping
     public ResponseEntity<List<CartItem>> getMyCart(Authentication auth) {
         return ResponseEntity.ok(service.getCart(auth.getName()));
     }
 
+    @Auditable(action = AuditAction.CREATE , entity = Entities.CARTITEM)
     @PostMapping()
     public ResponseEntity<CartItem> addProduct(
             @RequestParam Long productId,
@@ -32,6 +37,7 @@ public class CartController {
         return ResponseEntity.ok(service.addToCart(productId, quantity, auth.getName()));
     }
 
+    @Auditable(action = AuditAction.DELETE , entity = Entities.CARTITEM)
     @DeleteMapping()
     public ResponseEntity<Void>removeFromCart(Authentication auth,@RequestParam Set<Long> productsIds){
         service.removeFromCart(auth.getName(), productsIds);

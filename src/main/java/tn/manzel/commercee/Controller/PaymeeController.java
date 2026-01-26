@@ -12,7 +12,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 import tn.manzel.commercee.ApiEndpoints.ApiEndpoints;
+import tn.manzel.commercee.DAO.Entities.PostgresSql.AuditAction;
 import tn.manzel.commercee.DTO.PaymeeWebhookDTO;
+import tn.manzel.commercee.Service.AuditService.Auditable;
+import tn.manzel.commercee.Service.AuditService.Entities;
 import tn.manzel.commercee.Service.PaymeeService.PaymeeService;
 import tn.manzel.commercee.Service.PaymentService.PaymentService;
 
@@ -41,6 +44,7 @@ public class PaymeeController {
 //    }
 
 
+    @Auditable(action = AuditAction.CREATE , entity = Entities.PAYOUTS)
     @PostMapping(ApiEndpoints.paymeetEndpoints.WEBHOOK)
     public ResponseEntity<String> handlePaymeeWebhook(PaymeeWebhookDTO payload) {
 
@@ -94,12 +98,14 @@ public class PaymeeController {
 
 
 
+    @Auditable(action = AuditAction.CREATE , entity = Entities.PAYMENT)
     @PostMapping()
     public ResponseEntity<Map<String, Object>> createPayment(Authentication auth){
         return ResponseEntity.ok().body(paymentCalculService.payCart(auth.getName()));
     }
 
 
+    @Auditable(action = AuditAction.CREATE , entity = Entities.CSV)
     @GetMapping(ApiEndpoints.paymeetEndpoints.EXPORT_PAYMENT)
     public ResponseEntity<Resource> exportCsv() throws IOException {
         // 1. Générer le contenu CSV en mémoire

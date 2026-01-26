@@ -96,15 +96,20 @@ public class PaymentService {
     {
         List<PayoutSummaryDTO> payouts= payoutService.getPendingGroupedByseller();
 
-    // 2. Créer l'en-tête du fichier
+   //en-tête du fichier
         StringBuilder csv = new StringBuilder();
-        csv.append("Email;Somme;IBAN\n"); // Utilise ";" pour une meilleure compatibilité Excel en Tunisie
+        csv.append("Nom du beneficiaire" +
+                ";RIB" +
+                ";Montant" +
+                ";Motif\n");
 
 
         for (PayoutSummaryDTO dto : payouts) {
             csv.append(dto.sellerEmail()).append(";")
+                    .append(dto.sellerRib()).append(";")
                     .append(dto.totalAmount()).append(";")
-                    .append(dto.sellerRib()).append("\n");
+                    .append("Payement de la plateform de vente").append("\n");
+
         }
 
         return csv.toString();

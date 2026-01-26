@@ -11,5 +11,5 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Auditable {
     AuditAction action();
-    String entity();
+    Entities entity();
 }
